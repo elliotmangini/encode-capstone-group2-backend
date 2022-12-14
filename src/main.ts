@@ -4,7 +4,15 @@ import {SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  const corsOptions = {
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  };
+  app.enableCors(corsOptions);
   const config = new DocumentBuilder()
   .setTitle('W4 Project')
   .setDescription('Simple dApp for voting.')
@@ -17,3 +25,7 @@ SwaggerModule.setup('api', app, document);
   await app.listen(3000);
 }
 bootstrap();
+
+
+
+
