@@ -20,4 +20,9 @@ export class AppController {
     return this.appService.getBlockDefaultLatest(hash);
   }
 
+  @Get("/mint/:hash")
+  mint(@Param('hash') hash: string) {
+    return this.appService.mint(hash);
+  }
+
 }
