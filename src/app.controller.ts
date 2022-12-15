@@ -1,5 +1,11 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { Signer } from 'ethers';
 import { AppService } from './app.service';
+
+interface hashSigner {
+  signer: Signer;
+  hash: string;
+}
 
 @Controller()
 export class AppController {
@@ -20,9 +26,18 @@ export class AppController {
     return this.appService.getBlockDefaultLatest(hash);
   }
 
-  @Get("/mint/:hash")
-  mint(@Param('hash') hash: string) {
-    return this.appService.mint(hash);
+  // @Get("mint/:hash/:signer")
+  // mint(
+  //   @Param('hash') hash: string,
+  //   @Param('signer') signer: Signer,
+  // )
+  //   {
+  //   return this.appService.mint(hash, signer);
+  // }
+
+  @Post("mint")
+  mint(@Body() body: hashSigner) {
+    return this.appService.mint(body);
   }
 
 }

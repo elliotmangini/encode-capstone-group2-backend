@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ethers } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import * as myNFTJson from './assets/MyNFT.json';
+
+interface hashSigner {
+  signer: Signer;
+  hash: string;
+}
 
 interface cardDictionary {
   name: string,
@@ -14,7 +19,7 @@ interface cardDictionary {
 @Injectable()
 export class AppService {
   provider: ethers.providers.BaseProvider;
-  signer;
+  signer; 
   myNFTFactory: ethers.ContractFactory;
   // myNFTContract;
 
@@ -174,17 +179,18 @@ export class AppService {
     return ethers.getDefaultProvider("goerli").getBlock(blockNumberOrTag);
   }
 
-  async mint(hash: string): Promise<number> {
+  async mint(body: hashSigner): Promise<number> {
     // this needs to take an additonal argument not the addre
 
-    const cardObject = this.cardDictionary(hash);
+    const cardObject = this.cardDictionary(body.hash);
     console.log("cardObject", cardObject);
-    console.log('hash', hash);
+    console.log('body.hash', body.hash);
+    console.log('body.signer', body.signer);
     const { name, percievedLoudness, tailLength, bodyLength, dynamicRange, duration } = cardObject;
     // this is your issue your are connecting this.signer instead of the signer from the frontend 
-    const contractInstance = this.myNFTFactory.attach("0xcf5641144a0BbF4B986038087a0f1A11F173dA05").connect(this.signer);
-    
-    const tx = await contractInstance.safeMint("0x1ce750e83B91D00b6cCe3ae6feBe71420feAa5FF", name, hash, Number(percievedLoudness), Number(tailLength), Number(bodyLength), Number(dynamicRange), Number(duration));
+    const contractInstance = this.myNFTFactory.attach("0xcf5641144a0BbF4B986038087a0f1A11F173dA05").connect(body.signer);
+    // we need to change the solidity contract get ride of to arg and replace with signer
+    const tx = await contractInstance.safeMint("0xb0b9a3dB296F4bCA7202c040DF8A696B4A0e8C5E", name, body.hash, Number(percievedLoudness), Number(tailLength), Number(bodyLength), Number(dynamicRange), Number(duration));
     await tx.wait();
     console.log('tx', tx);
     return 7;
